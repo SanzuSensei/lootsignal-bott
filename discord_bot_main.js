@@ -19,7 +19,7 @@ const {
 const fetch = require('node-fetch'); // For GitHub API syncing
 
 const CONFIG = {
-    TOKEN: '',
+    TOKEN: process.env.TOKEN || '',
     CLIENT_ID: '1392196089142313060',
     GUILD_ID: '1392439850120249394',
     LOG_CHANNEL_ID: '1392439850971697293',
