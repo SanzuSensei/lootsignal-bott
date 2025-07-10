@@ -506,7 +506,7 @@ async function endGiveaway(giveaway) {
         const users = await reaction.users.fetch();
         const participants = users.filter(u => !u.bot);
 
-        // Remove duplicates
+        // ✅ Remove duplicates
         const uniqueParticipants = [...new Map(participants.map(u => [u.id, u])).values()];
 
         if (uniqueParticipants.length === 0) {
@@ -524,15 +524,16 @@ async function endGiveaway(giveaway) {
         const winnersMentions = winners.map(w => `<@${w.id}>`).join(', ');
         await channel.send(`🎉 Giveaway ended! Congratulations to: ${winnersMentions} for **${giveaway.item}**!`);
 
-            await logAction(`Giveaway ended for item "${giveaway.item}". Winners: ${winnersMentions}`);
-        }
+        await logAction(`Giveaway ended for item "${giveaway.item}". Winners: ${winnersMentions}`);
 
         botData.giveaways = botData.giveaways.filter(g => g.messageId !== giveaway.messageId);
         saveBotData();
+
     } catch (e) {
         console.error('Error ending giveaway:', e);
     }
 }
+
 
 // Welcome event
 client.on('guildMemberAdd', async member => {
