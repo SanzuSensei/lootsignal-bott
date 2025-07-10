@@ -17,12 +17,12 @@ passport.use(new DiscordStrategy({
     process.nextTick(() => done(null, profile));
 }));
 
-router.get('/auth', passport.authenticate('discord'));
+router.get('/auth/discord', passport.authenticate('discord'));
+
 router.get('/auth/callback',
     passport.authenticate('discord', { failureRedirect: '/' }),
     (req, res) => {
         res.redirect('/dashboard');
     }
 );
-
 module.exports = router;
