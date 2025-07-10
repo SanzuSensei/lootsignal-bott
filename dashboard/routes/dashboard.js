@@ -2,9 +2,9 @@
 const router = express.Router();
 
 const bodyParser = require('body-parser');
-const { Client, EmbedBuilder } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const config = require('../config');
-const { client: botClient, botData, saveBotData } = require('../../discord_bot_main');
+const { client, botData, saveBotData } = require('../../discord_bot_main');
 
 // ✅ Add bodyParser to this router
 router.use(bodyParser.urlencoded({ extended: true }));
@@ -22,13 +22,13 @@ router.get('/', checkAuth, (req, res) => {
         error: null,
     });
 });
-    // mail logic here
 
+// Mail route
 router.post('/mail', checkAuth, async (req, res) => {
     const { channel, message } = req.body;
 
     try {
-        const targetChannel = await botClient.channels.fetch(channel);
+        const targetChannel = await client.channels.fetch(channel);
         if (!targetChannel || !targetChannel.isTextBased()) throw new Error('Invalid channel ID');
 
         const mailEmbed = new EmbedBuilder()
@@ -53,18 +53,18 @@ router.post('/mail', checkAuth, async (req, res) => {
         });
     }
 });
+
+// Set announcement route
 router.post('/announcement', checkAuth, async (req, res) => {
     const { type, channel } = req.body;
 
     try {
-        const ch = await botClient.channels.fetch(channel);
+        const ch = await client.channels.fetch(channel);
         if (!ch || !ch.isTextBased()) throw new Error('Invalid channel ID');
 
-        // Update botData
         botData.announcements[`${type}Enabled`] = true;
         botData.announcements[`${type}ChannelId`] = channel;
 
-        // Save locally + to GitHub if using it
         if (typeof saveBotData === 'function') {
             await saveBotData();
         }
@@ -83,36 +83,5 @@ router.post('/announcement', checkAuth, async (req, res) => {
         });
     }
 });
-router.post('/announcement', checkAuth, async (req, res) => {
-    const { type, channel } = req.body;
-
-    try {
-        const ch = await botClient.channels.fetch(channel);
-        if (!ch || !ch.isTextBased()) throw new Error('Invalid channel ID');
-
-        // Update botData
-        botData.announcements[`${type}Enabled`] = true;
-        botData.announcements[`${type}ChannelId`] = channel;
-
-        // Save locally + to GitHub if using it
-        if (typeof saveBotData === 'function') {
-            await saveBotData();
-        }
-
-        res.render('dashboard', {
-            user: req.user,
-            success: true,
-            error: null,
-        });
-    } catch (err) {
-        console.error('Announcement update error:', err);
-        res.render('dashboard', {
-            user: req.user,
-            success: false,
-            error: err.message,
-        });
-    }
-});
-
 
 module.exports = router;
