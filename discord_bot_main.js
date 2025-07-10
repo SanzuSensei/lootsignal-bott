@@ -21,10 +21,10 @@ const fetch = require('node-fetch'); // For GitHub API syncing
 const CONFIG = {
     TOKEN: process.env.TOKEN || '',
     CLIENT_ID: '1392196089142313060',
-    GUILD_ID: '1392439850120249394',
-    LOG_CHANNEL_ID: '1392439850971697293',
-    ALLOWED_ROLE_IDS: ['1392439850149351552', '1392439850120249401'], // mod/admin roles allowed for commands
-    ALLOWED_USER_IDS: ['700124750571110420'], // specific allowed users (e.g. owner)
+    GUILD_ID: '1391461659079606503',
+    LOG_CHANNEL_ID: '1391465458766450691',
+    ALLOWED_ROLE_IDS: ['1391524891114602657', '1391525034538827848'], // mod/admin roles allowed for commands
+    ALLOWED_USER_IDS: ['969623913543909416'], // specific allowed users (e.g. owner)
     OWNER_USER_ID: '700124750571110420', // for logout command
     GITHUB_REPO_OWNER: 'SanzuSensei',
     GITHUB_REPO_NAME: 'discord-bot-dataa',
