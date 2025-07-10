@@ -1,0 +1,32 @@
+{
+    "name": "lostsignal-bot",
+    "version": "1.0.0",
+    "main": "discord_bot_main.js",
+    "bin": "discord_bot_main.js",
+    "scripts": {
+        "start": "node discord_bot_main.js",
+        "dashboard": "node dashboard/app.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "discord.js": "^14.21.0",
+        "dotenv": "^17.2.0",
+        "ejs": "^3.1.10",
+        "express": "^5.1.0",
+        "express-session": "^1.18.1",
+        "node-fetch": "^2.7.0",
+        "passport": "^0.7.0",
+        "passport-discord": "^0.1.4"
+    },
+    "pkg": {
+        "scripts": [
+            "discord_bot_main.js"
+        ]
+    },
+    "devDependencies": {
+        "eslint": "^9.30.1",
+        "nodemon": "^3.1.10"
+    }
+}

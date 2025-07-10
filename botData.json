@@ -1,0 +1,40 @@
+{
+  "giveaways": [],
+  "bans": [],
+  "kicks": [
+    {
+      "userId": "1030181325602291755",
+      "reason": "yuh",
+      "kickedAt": 1752080343470
+    },
+    {
+      "userId": "1030181325602291755",
+      "reason": "yer",
+      "kickedBy": "700124750571110420",
+      "timestamp": 1752117224680
+    },
+    {
+      "userId": "1030181325602291755",
+      "reason": "e",
+      "kickedBy": "700124750571110420",
+      "timestamp": 1752125096104
+    }
+  ],
+  "mutes": [],
+  "counters": {
+    "giveawaysStarted": 2,
+    "bansDone": 6,
+    "kicksDone": 3,
+    "mutesDone": 2,
+    "unbansDone": 3,
+    "unmutesDone": null
+  },
+  "announcements": {
+    "welcomeEnabled": true,
+    "welcomeChannelId": "1392439850971697293",
+    "goodbyeEnabled": true,
+    "goodbyeChannelId": "1392439850606661632",
+    "boostEnabled": false,
+    "boostChannelId": null
+  }
+}
