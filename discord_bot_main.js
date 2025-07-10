@@ -506,20 +506,23 @@ async function endGiveaway(giveaway) {
         const users = await reaction.users.fetch();
         const participants = users.filter(u => !u.bot);
 
-        if (participants.size === 0) {
+        // Remove duplicates
+        const uniqueParticipants = [...new Map(participants.map(u => [u.id, u])).values()];
+
+        if (uniqueParticipants.length === 0) {
             await channel.send('No valid participants for the giveaway.');
-        } else {
-            const winners = [];
-            const participantsArray = [...participants.values()];
-            const winnerCount = Math.min(giveaway.winners, participantsArray.length);
+            return;
+        }
 
-            while (winners.length < winnerCount) {
-                const pick = participantsArray[Math.floor(Math.random() * participantsArray.length)];
-                if (!winners.includes(pick)) winners.push(pick);
-            }
+        const winners = [];
+        const winnerCount = Math.min(giveaway.winners, uniqueParticipants.length);
+        while (winners.length < winnerCount) {
+            const pick = uniqueParticipants[Math.floor(Math.random() * uniqueParticipants.length)];
+            if (!winners.includes(pick)) winners.push(pick);
+        }
 
-            const winnersMentions = winners.map(w => `<@${w.id}>`).join(', ');
-            await channel.send(`🎉 Giveaway ended! Congratulations to: ${winnersMentions} for **${giveaway.item}**!`);
+        const winnersMentions = winners.map(w => `<@${w.id}>`).join(', ');
+        await channel.send(`🎉 Giveaway ended! Congratulations to: ${winnersMentions} for **${giveaway.item}**!`);
 
             await logAction(`Giveaway ended for item "${giveaway.item}". Winners: ${winnersMentions}`);
         }
@@ -705,6 +708,7 @@ client.on(Events.InteractionCreate, async interaction => {
                 .setTimestamp();
 
             const msg = await interaction.reply({ embeds: [embed], fetchReply: true });
+            await msg.react('🎉'); // ✅ Add reaction button for entering
 
             giveaway.messageId = msg.id;
             saveBotData();
