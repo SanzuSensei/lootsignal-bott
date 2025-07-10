@@ -29,7 +29,7 @@ const CONFIG = {
     GITHUB_REPO_OWNER: 'SanzuSensei',
     GITHUB_REPO_NAME: 'discord-bot-dataa',
     GITHUB_FILE_PATH: 'botData.json',
-    GITHUB_ACCESS_TOKEN: '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',
+    GITHUB_ACCESS_TOKEN: process.env.GITHUB_ACCESS_TOKEN || '',
 };
 
 const DATA_FILE = path.resolve(__dirname, 'botData.json');
