@@ -12,11 +12,14 @@ const {
     ButtonBuilder,
     ButtonStyle,
     ActivityType,
+    ModalBuilder,
+    TextInputBuilder,
+    TextInputStyle,
 } = require('discord.js');
 const fetch = require('node-fetch'); // For GitHub API syncing
 
 const CONFIG = {
-    TOKEN: process.env.TOKEN || 'your-token-here',
+    TOKEN: '',
     CLIENT_ID: '1392196089142313060',
     GUILD_ID: '1392439850120249394',
     LOG_CHANNEL_ID: '1392439850971697293',
@@ -223,9 +226,9 @@ const commands = [
             .setName('channel')
             .setDescription('Channel to send announcement')
             .setRequired(true))
-        .addStringOption(opt => opt
-            .setName('text')
-            .setDescription('Your message')
+        .addRoleOption(opt => opt
+            .setName('pingrole')
+            .setDescription('Role to ping')
             .setRequired(true)),
 
     new SlashCommandBuilder()
@@ -630,6 +633,29 @@ async function getOrCreateMuteRole(guild) {
 
 // On interaction create
 client.on(Events.InteractionCreate, async interaction => {
+    if (interaction.isModalSubmit() && interaction.customId.startsWith('mail-modal-')) {
+        const [channelId, roleId] = interaction.customId.replace('mail-modal-', '').split('_');
+        const messageText = interaction.fields.getTextInputValue('mailText');
+        const channel = await client.channels.fetch(channelId).catch(() => null);
+
+        if (!channel?.isTextBased()) {
+            await interaction.reply({ content: 'Could not send mail. Channel invalid.', ephemeral: true });
+            return;
+        }
+
+        const mailEmbed = new EmbedBuilder()
+            .setTitle('📬 MAIL HAS ARRIVED')
+            .setDescription(messageText)
+            .setColor(ACCENT_COLOR)
+            .setFooter({ text: `Sent by ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL() })
+            .setTimestamp();
+
+        const pingText = roleId && roleId !== 'none' ? `<@&${roleId}>` : '';
+
+        await channel.send({ content: pingText, embeds: [mailEmbed] });
+        await interaction.reply({ content: '📨 Mail delivered successfully!', ephemeral: true });
+        await logAction(`<@${interaction.user.id}> sent mail in <#${channelId}>.`);
+    }
     if (!interaction.isChatInputCommand()) return;
 
     // Commands anyone can use
@@ -1068,16 +1094,27 @@ client.on(Events.InteractionCreate, async interaction => {
         }
         case 'mail': {
             const channel = interaction.options.getChannel('channel');
-            const text = interaction.options.getString('text');
-
             if (!channel?.isTextBased()) {
                 await interaction.reply({ content: 'Invalid channel selected.', ephemeral: true });
                 return;
             }
 
-            await channel.send(text);
-            await interaction.reply({ content: 'Message sent!', ephemeral: true });
-            await logAction(`<@${interaction.user.id}> used /mail to send: "${text}" in <#${channel.id}>`);
+            // Show modal for message input
+            const pingRole = interaction.options.getRole('pingrole');
+            const modal = new ModalBuilder()
+                .setCustomId(`mail-modal-${channel.id}_${pingRole?.id || 'none'}`)
+                .setTitle('Send Mail')
+                .addComponents(
+                    new ActionRowBuilder().addComponents(
+                        new TextInputBuilder()
+                            .setCustomId('mailText')
+                            .setLabel('Enter your announcement')
+                            .setStyle(TextInputStyle.Paragraph)
+                            .setRequired(true)
+                    )
+                );
+
+            await interaction.showModal(modal);
             break;
         }
         case 'rep': {
@@ -1124,3 +1161,9 @@ client.on(Events.InteractionCreate, async interaction => {
 loadBotData();
 
 client.login(CONFIG.TOKEN);
+
+module.exports = {
+    client,
+    botData,
+    saveBotData
+};
